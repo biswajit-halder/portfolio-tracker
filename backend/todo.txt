@@ -1,0 +1,43 @@
+API Endpoints (Backend Priority)
+Authentication
+
+POST /api/auth/register - User registration
+POST /api/auth/login - User login, returns JWT
+POST /api/auth/logout - Logout
+
+Holdings Management
+
+GET /api/holdings - Get all holdings for user
+POST /api/holdings - Add new holding
+PUT /api/holdings/:id - Update holding
+DELETE /api/holdings/:id - Delete holding
+GET /api/holdings/:id - Get single holding details
+
+Transactions
+
+GET /api/transactions - Get all transactions (with filtering: symbol, type, date range)
+POST /api/transactions - Record a transaction (buy/sell)
+DELETE /api/transactions/:id - Delete transaction
+
+Portfolio Metrics (Complex backend logic)
+
+GET /api/portfolio/summary - Returns:
+
+Total investment amount
+Current portfolio value
+Total gain/loss (absolute and percentage)
+Best/worst performing holding
+Asset allocation by percentage
+
+GET /api/portfolio/performance - Returns historical performance data
+
+Stock Data
+
+GET /api/stocks/:symbol - Get current price and data for a symbol
+GET /api/stocks/search?q=query - Search stocks by name/symbol
+
+Watchlist
+
+GET /api/watchlist - Get user's watchlist
+POST /api/watchlist - Add to watchlist
+DELETE /api/watchlist/:symbol - Remove from watchlist
