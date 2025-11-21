@@ -5,6 +5,7 @@ import { connectDB } from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
 import holdingRoutes from "./routes/holdingRoutes.js";
 import transactionRoutes from "./routes/transactionRoutes.js";
+import watchlistRoutes from "./routes/watchlistRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -21,6 +22,8 @@ app.use(express.json());
 app.use("/api/auth/", userRoutes);
 app.use("/api/holdings", holdingRoutes);
 app.use("/api/transactions", transactionRoutes);
+
+app.use("/api/watchlist", watchlistRoutes);
 
 app.get("/", (req, res) => {
     res.send("API WORKING");
