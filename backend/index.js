@@ -4,6 +4,7 @@ import "dotenv/config";
 import { connectDB } from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
 import holdingRoutes from "./routes/holdingRoutes.js";
+import transactionRoutes from "./routes/transactionRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -19,6 +20,7 @@ app.use(express.json());
 // ROUTES
 app.use("/api/auth/", userRoutes);
 app.use("/api/holdings", holdingRoutes);
+app.use("/api/transactions", transactionRoutes);
 
 app.get("/", (req, res) => {
     res.send("API WORKING");
