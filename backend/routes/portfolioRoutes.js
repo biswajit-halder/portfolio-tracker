@@ -4,6 +4,6 @@ import { getPortfolioSummary } from "../controllers/portfolioController.js";
 
 const portfolioRouter = express.Router();
 
-portfolioRouter.get('/', protect, getPortfolioSummary);
+portfolioRouter.get('/summary', protect, getPortfolioSummary);
 
 export default portfolioRouter;
