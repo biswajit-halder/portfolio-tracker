@@ -3,9 +3,10 @@ import cors from "cors";
 import "dotenv/config";
 import { connectDB } from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
-import holdingRoutes from "./routes/holdingRoutes.js";
-import transactionRoutes from "./routes/transactionRoutes.js";
+import holdingsRoutes from "./routes/holdingsRoutes.js";
+import transactionsRoutes from "./routes/transactionsRoutes.js";
 import watchlistRoutes from "./routes/watchlistRoutes.js";
+import portfolioRoutes from "./routes/portfolioRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -20,8 +21,9 @@ app.use(express.json());
 
 // ROUTES
 app.use("/api/auth/", userRoutes);
-app.use("/api/holdings", holdingRoutes);
-app.use("/api/transactions", transactionRoutes);
+app.use("/api/holdings", holdingsRoutes);
+app.use("/api/transactions", transactionsRoutes);
+app.use("/api/portfolio", portfolioRoutes);
 
 app.use("/api/watchlist", watchlistRoutes);
 
