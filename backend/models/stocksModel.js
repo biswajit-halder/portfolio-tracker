@@ -6,37 +6,40 @@ const StocksSchema = mongoose.Schema(
             type: String,
             required: true,
             uppercase: true,
-            unique: true,
+            unique: true
         },
         companyName: {
             type: String,
-            required: true,
+            required: true
         },
         industry: {
             type: String,
-            required: true,
+            required: true
         },
         sector: {
             type: String,
-            required: true,
+            required: true
         },
         isin: {
             type: String,
-            required: true,
+            required: true
         },
         status: {
             type: String,
+            required: true
         },
         listingDate: {
             type: Date,
-            required: true,
-        },
+            required: true
+        }
     },
     {
-        timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" },
+        timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" }
     }
 );
 
-StocksSchema.index({ symbol: 1 }, { unique: true });
+// Add text index for fast searching
+StocksSchema.index({ symbol: 1, companyName: 1 });
+StocksSchema.index({ companyName: "text", symbol: "text" });
 
 export default mongoose.model("Stocks", StocksSchema);
