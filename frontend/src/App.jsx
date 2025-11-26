@@ -13,6 +13,7 @@ import Landing from "./pages/Landing";
 import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
 import Dashboard from "./pages/Dashboard";
+import Holdings from "./pages/Holdings";
 import NotFound from "./pages/NotFound";
 
 // Layout
@@ -35,6 +36,14 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/holdings"
+              element={
+                <ProtectedRoute>
+                  <Holdings />
                 </ProtectedRoute>
               }
             />

@@ -3,7 +3,7 @@ import Transaction from "../models/transactionModel.js";
 
 export const getUserHoldings = async (req, res) => {
     try {
-        const holdings = await Holding.find({ userId: req.user._id }).sorted({
+        const holdings = await Holding.find({ userId: req.user._id }).sort({
             updatedAt: -1,
         });
 
