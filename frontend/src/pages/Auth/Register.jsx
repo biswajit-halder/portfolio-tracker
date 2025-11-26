@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { TrendingUp, Mail, Lock, Eye, EyeOff, User } from 'lucide-react';
 
 export default function Register() {
@@ -12,6 +13,9 @@ export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const { register } = useAuth();
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         setFormData({
@@ -22,13 +26,23 @@ export default function Register() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+        
         if (formData.password !== formData.confirmPassword) {
-            alert('Passwords do not match');
+            setError('Passwords do not match');
             return;
         }
+        
         setLoading(true);
-        // TODO: Implement register logic
-        console.log('Register:', formData);
+        
+        const result = await register(formData.name, formData.email, formData.password);
+        
+        if (result.success) {
+            navigate('/dashboard');
+        } else {
+            setError(result.error);
+        }
+        
         setLoading(false);
     };
 
@@ -56,6 +70,11 @@ export default function Register() {
                 {/* Register Form */}
                 <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8">
                     <form onSubmit={handleSubmit} className="space-y-6">
+                        {error && (
+                            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+                                <p className="text-red-400 text-sm">{error}</p>
+                            </div>
+                        )}
                         {/* Name Field */}
                         <div>
                             <label className="block text-sm font-medium text-gray-300 mb-2">
