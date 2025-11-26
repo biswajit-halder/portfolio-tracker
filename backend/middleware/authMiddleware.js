@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 
 export const protect = async (req, res, next) => {
     try {
-        let token = req.headers.authorization;
+        let token = req.headers.Authorization;
 
         if (token && token.startsWith("Bearer")) {
             token = token.split(" ")[1];
@@ -17,6 +17,6 @@ export const protect = async (req, res, next) => {
             res.status(401).json({ message: "Not authorized" });
         }
     } catch (error) {
-         res.status(500).json({ message: "Token failed", error: error.message });
+        res.status(500).json({ message: "Token failed", error: error.message });
     }
 };
