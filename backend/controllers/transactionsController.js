@@ -2,10 +2,20 @@ import Transaction from "../models/transactionModel.js";
 
 export const getAllTransactions = async (req, res) => {
     try {
-        const transactions = await Transaction.find({
-            userId: req.user._id,
-        }).sort({
-            updatedAt: -1,
+        const { symbol, type, startDate, endDate } = req.query;
+        
+        const filter = { userId: req.user._id };
+        
+        if (symbol) filter.symbol = symbol;
+        if (type) filter.type = type;
+        if (startDate || endDate) {
+            filter.transactionDate = {};
+            if (startDate) filter.transactionDate.$gte = new Date(startDate);
+            if (endDate) filter.transactionDate.$lte = new Date(endDate);
+        }
+
+        const transactions = await Transaction.find(filter).sort({
+            transactionDate: -1,
         });
 
         res.json(transactions);

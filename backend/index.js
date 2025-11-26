@@ -8,6 +8,8 @@ import transactionsRoutes from "./routes/transactionsRoutes.js";
 import watchlistRoutes from "./routes/watchlistRoutes.js";
 import portfolioRoutes from "./routes/portfolioRoutes.js";
 import stocksRoutes from "./routes/stocksRoutes.js";
+import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
+import { generalLimiter, authLimiter, stockLimiter } from "./middleware/rateLimitMiddleware.js";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -19,18 +21,23 @@ connectDB();
 
 // MIDDLEWARES
 app.use(express.json());
+app.use(generalLimiter);
 
 // ROUTES
-app.use("/api/auth/", userRoutes);
+app.use("/api/auth/", authLimiter, userRoutes);
 app.use("/api/holdings", holdingsRoutes);
 app.use("/api/transactions", transactionsRoutes);
 app.use("/api/portfolio", portfolioRoutes);
 app.use("/api/watchlist", watchlistRoutes);
-app.use("/api/stocks", stocksRoutes);
+app.use("/api/stocks", stockLimiter, stocksRoutes);
 
 app.get("/", (req, res) => {
     res.send("API WORKING");
 });
+
+// ERROR HANDLING MIDDLEWARE
+app.use(notFound);
+app.use(errorHandler);
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
