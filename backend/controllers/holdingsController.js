@@ -1,4 +1,5 @@
 import Holding from "../models/holdingModel.js";
+import Transaction from "../models/transactionModel.js";
 
 export const getUserHoldings = async (req, res) => {
     try {
@@ -24,6 +25,17 @@ export const addHolding = async (req, res) => {
             purchaseDate: new Date().toISOString(),
         });
 
+        // Create corresponding BUY transaction
+        await Transaction.create({
+            userId: req.user._id,
+            symbol,
+            type: "BUY",
+            quantity,
+            pricePerShare: averageCostPerShare,
+            totalAmount: quantity * averageCostPerShare,
+            transactionDate: new Date().toISOString()
+        });
+
         res.status(201).json(newHolding);
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
@@ -43,9 +55,9 @@ export const updateHolding = async (req, res) => {
 
         Object.assign(holding, req.body);
 
-        const updatedHolding = await Holding.save();
+        const updatedHolding = await holding.save();
 
-        res.json(updateHolding);
+        res.json(updatedHolding);
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }

@@ -117,3 +117,24 @@ export const getPortfolioSummary = async (req, res) => {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
+
+export const getPortfolioPerformance = async (req, res) => {
+    try {
+        // For now, return mock historical data
+        // In production, you'd track daily portfolio values
+        const mockPerformanceData = [
+            { date: '2024-01-01', portfolioValue: 100000 },
+            { date: '2024-02-01', portfolioValue: 105000 },
+            { date: '2024-03-01', portfolioValue: 98000 },
+            { date: '2024-04-01', portfolioValue: 110000 },
+            { date: '2024-05-01', portfolioValue: 115000 }
+        ];
+
+        res.status(200).json({
+            performanceData: mockPerformanceData,
+            message: "Historical performance tracking not yet implemented"
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
