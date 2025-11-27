@@ -53,7 +53,11 @@ export const updateHolding = async (req, res) => {
             return res.status(404).json({ message: "holding not found" });
         }
 
-        Object.assign(holding, req.body);
+        const { symbol, quantity, averageCostPerShare, purchaseDate } = req.body;
+        holding.symbol = symbol;
+        holding.quantity = quantity;
+        holding.averageCostPerShare = averageCostPerShare;
+        holding.purchaseDate = purchaseDate;
 
         const updatedHolding = await holding.save();
 

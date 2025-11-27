@@ -1,5 +1,14 @@
 import mongoose from "mongoose";
+import "dotenv/config";
+
+const MONGO_URI = process.env.MONGO_URI;
 
 export const connectDB = async () => {
-    await mongoose.connect('mongodb+srv://bh97mail_db_user:jOgCj701Fb11qEra@cluster0.9uo9hnb.mongodb.net/portfolio-tracker').then(() => console.log('DB CONNECTED'))
-}
+    try {
+        await mongoose.connect(MONGO_URI);
+        console.log('DB CONNECTED');
+    } catch (err) {
+        console.error('DB connection error:', err.message);
+        process.exit(1);
+    }
+};

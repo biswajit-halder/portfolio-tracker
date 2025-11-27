@@ -5,6 +5,11 @@ class ErrorBoundary extends Component {
     constructor(props) {
         super(props);
         this.state = { hasError: false, error: null };
+        this.handleRefresh = this.handleRefresh.bind(this);
+    }
+
+    handleRefresh() {
+        window.location.reload();
     }
 
     static getDerivedStateFromError(error) {
@@ -30,7 +35,7 @@ class ErrorBoundary extends Component {
                             We encountered an unexpected error. Please refresh the page to try again.
                         </p>
                         <button
-                            onClick={() => window.location.reload()}
+                            onClick={this.handleRefresh}
                             className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
                         >
                             Refresh Page

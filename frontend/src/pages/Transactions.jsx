@@ -3,6 +3,14 @@ import { Plus, Trash2, Filter, TrendingUp, TrendingDown, Calendar, Search } from
 import { transactionsService } from '../services/transactionsService';
 import { stocksService } from '../services/stocksService';
 
+function getLabelText(key) {
+    const labels = {
+        symbol: 'Symbol',
+        // Add other keys and translations as needed
+    };
+    return labels[key] || key;
+}
+
 export default function Transactions() {
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -165,166 +173,171 @@ export default function Transactions() {
                             <span className="text-2xl font-bold text-purple-600">₹</span>
                         </div>
                     </div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {getLabelText('symbol')}
+                    </label>
+                    <input
+                        type="text"
+                        value={filters.symbol}
+                        onChange={(e) => setFilters({ ...filters, symbol: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        placeholder="e.g., RELIANCE"
+                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Symbol</label>
+                    <input
+                        type="text"
+                        value={filters.symbol}
+                        onChange={(e) => setFilters({ ...filters, symbol: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        placeholder="e.g., RELIANCE"
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                    <select
+                        value={filters.type}
+                        onChange={(e) => setFilters({ ...filters, type: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    >
+                        <option value="">All Types</option>
+                        <option value="BUY">Buy</option>
+                        <option value="SELL">Sell</option>
+                    </select>
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                    <input
+                        type="date"
+                        value={filters.startDate}
+                        onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                    <input
+                        type="date"
+                        value={filters.endDate}
+                        onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
                 </div>
             </div>
-
-            {/* Filters */}
-            {showFilters && (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Symbol</label>
-                            <input
-                                type="text"
-                                value={filters.symbol}
-                                onChange={(e) => setFilters({ ...filters, symbol: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                placeholder="e.g., RELIANCE"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-                            <select
-                                value={filters.type}
-                                onChange={(e) => setFilters({ ...filters, type: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                            >
-                                <option value="">All Types</option>
-                                <option value="BUY">Buy</option>
-                                <option value="SELL">Sell</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-                            <input
-                                type="date"
-                                value={filters.startDate}
-                                onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                            <input
-                                type="date"
-                                value={filters.endDate}
-                                onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                            />
-                        </div>
-                    </div>
-                    <div className="mt-4 flex justify-end">
-                        <button
-                            onClick={clearFilters}
-                            className="px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors"
-                        >
-                            Clear Filters
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {/* Transactions Table */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                {transactions.length === 0 ? (
-                    <div className="p-12 text-center">
-                        <div className="bg-gray-100 p-4 rounded-full w-16 h-16 mx-auto mb-4">
-                            <Calendar className="h-8 w-8 text-gray-400 mx-auto mt-1" />
-                        </div>
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">No Transactions Found</h3>
-                        <p className="text-gray-600 mb-6">
-                            {Object.values(filters).some(f => f) ? 'No transactions match your filters.' : 'Start by adding your first transaction.'}
-                        </p>
-                        {!Object.values(filters).some(f => f) && (
-                            <button
-                                onClick={() => setShowModal(true)}
-                                className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-                            >
-                                Add First Transaction
-                            </button>
-                        )}
-                    </div>
-                ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead className="bg-gray-50">
-                                <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Date
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Symbol
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Type
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Quantity
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Price
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Total Amount
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Actions
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                                {transactions.map((transaction) => (
-                                    <tr key={transaction._id} className="hover:bg-gray-50">
-                                        <td className="px-6 py-4 whitespace-nowrap text-gray-500">
-                                            {new Date(transaction.transactionDate).toLocaleDateString()}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="font-medium text-gray-900">{transaction.symbol}</div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${transaction.type === 'BUY'
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-red-100 text-red-800'
-                                                }`}>
-                                                {transaction.type}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-gray-900">
-                                            {transaction.quantity}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-gray-900">
-                                            {formatCurrency(transaction.pricePerShare)}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-gray-900">
-                                            {formatCurrency(transaction.totalAmount || transaction.quantity * transaction.pricePerShare)}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <button
-                                                onClick={() => handleDeleteTransaction(transaction._id)}
-                                                className="text-red-600 hover:text-red-900 p-1"
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
+            <div className="mt-4 flex justify-end">
+                <button
+                    onClick={clearFilters}
+                    className="px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                    Clear Filters
+                </button>
             </div>
+        </div>
+    )
+}
 
-            {/* Modal */}
-            {showModal && (
-                <TransactionModal
-                    onClose={() => setShowModal(false)}
-                    onSave={() => {
-                        setShowModal(false);
-                        fetchTransactions();
-                    }}
-                />
+{/* Transactions Table */ }
+<div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    {transactions.length === 0 ? (
+        <div className="p-12 text-center">
+            <div className="bg-gray-100 p-4 rounded-full w-16 h-16 mx-auto mb-4">
+                <Calendar className="h-8 w-8 text-gray-400 mx-auto mt-1" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Transactions Found</h3>
+            <p className="text-gray-600 mb-6">
+                {Object.values(filters).some(f => f) ? 'No transactions match your filters.' : 'Start by adding your first transaction.'}
+            </p>
+            {!Object.values(filters).some(f => f) && (
+                <button
+                    onClick={() => setShowModal(true)}
+                    className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                >
+                    Add First Transaction
+                </button>
             )}
         </div>
+    ) : (
+        <div className="overflow-x-auto">
+            <table className="w-full">
+                <thead className="bg-gray-50">
+                    <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Date
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Symbol
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Type
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Quantity
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Price
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Total Amount
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                    {transactions.map((transaction) => (
+                        <tr key={transaction._id} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                                {new Date(transaction.transactionDate).toLocaleDateString()}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="font-medium text-gray-900">{transaction.symbol}</div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${transaction.type === 'BUY'
+                                    ? 'bg-green-100 text-green-800'
+                                    : 'bg-red-100 text-red-800'
+                                    }`}>
+                                    {transaction.type}
+                                </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                                {transaction.quantity}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                                {formatCurrency(transaction.pricePerShare)}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                                {formatCurrency(transaction.totalAmount || transaction.quantity * transaction.pricePerShare)}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <button
+                                    onClick={() => handleDeleteTransaction(transaction._id)}
+                                    className="text-red-600 hover:text-red-900 p-1"
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    )}
+</div>
+
+{/* Modal */ }
+{
+    showModal && (
+        <TransactionModal
+            onClose={() => setShowModal(false)}
+            onSave={() => {
+                setShowModal(false);
+                fetchTransactions();
+            }}
+        />
+    )
+}
+        </div >
     );
 }
 

@@ -14,6 +14,10 @@ function Dashboard() {
     const [portfolioData, setPortfolioData] = useState(null);
     const { user } = useAuth();
 
+    const handleRetry = () => {
+        window.location.reload();
+    };
+
     useEffect(() => {
         const fetchPortfolioData = async () => {
             try {
@@ -67,7 +71,7 @@ function Dashboard() {
                         <p className="text-red-700">{error}</p>
                     </div>
                     <button
-                        onClick={() => window.location.reload()}
+                        onClick={handleRetry}
                         className="mt-3 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                     >
                         Retry
