@@ -18,12 +18,12 @@ export const getStockDetailsBySymbol = async (req, res) => {
                 previousClose: stockDetails.priceInfo.previousClose,
                 change: stockDetails.priceInfo.change,
                 changePercent: stockDetails.priceInfo.pChange,
-                totalTradedVolume: stockDetails.tradeInfo.totalTradedVolume,
-                totalTradedValue: stockDetails.tradeInfo.totalTradedValue,
+                totalTradedVolume: stockDetails.tradeInfo?.totalTradedVolume,
+                totalTradedValue: stockDetails.tradeInfo?.totalTradedValue,
                 weekHigh: stockDetails.priceInfo.weekHighLow.max,
                 weekLow: stockDetails.priceInfo.weekHighLow.min,
                 pe: stockDetails.metadata.pdSymbolPe,
-                marketCap: stockDetails.tradeInfo.totalMarketCap,
+                marketCap: stockDetails.tradeInfo?.totalMarketCap,
                 isin: stockDetails.info.isin,
                 listingDate: stockDetails.info.listingDate,
                 status: stockDetails.metadata.status,
@@ -41,7 +41,7 @@ export const getStockDetailsBySymbol = async (req, res) => {
 export const searchStocks = async (req, res) => {
     try {
         const { q } = req.query;
-        
+
         if (!q || q.trim().length < 2) {
             return res.status(400).json({ message: "Query must be at least 2 characters" });
         }

@@ -14,6 +14,16 @@ export const addToWatchlist = async (req, res) => {
     try {
         const { symbol } = req.body;
 
+        // Check if already exists
+        const existing = await Watchlist.findOne({
+            userId: req.user._id,
+            symbol
+        });
+
+        if (existing) {
+            return res.status(400).json({ message: "Stock already in watchlist" });
+        }
+
         const newWatchlist = await Watchlist.create({
             userId: req.user._id,
             symbol,

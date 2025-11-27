@@ -7,43 +7,43 @@ import AllocationChart from '../components/Charts/AllocationChart';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 function Dashboard() {
-    const [portfolioData, setPortfolioData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [performanceData, setPerformanceData] = useState([]);
     const [performanceLoading, setPerformanceLoading] = useState(true);
+    const [portfolioData, setPortfolioData] = useState(null);
     const { user } = useAuth();
 
     useEffect(() => {
+        const fetchPortfolioData = async () => {
+            try {
+                setLoading(true);
+                console.log('Token:', localStorage.getItem('token')); // Debug
+                const data = await portfolioService.getSummary();
+                setPortfolioData(data);
+            } catch (error) {
+                console.error('Portfolio API Error:', error.response); // Debug
+                setError(error.response?.data?.message || 'Failed to fetch portfolio data');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        const fetchPerformanceData = async () => {
+            try {
+                setPerformanceLoading(true);
+                const data = await portfolioService.getPerformance();
+                setPerformanceData(data.performanceData || []);
+            } catch (error) {
+                console.error('Performance API Error:', error);
+            } finally {
+                setPerformanceLoading(false);
+            }
+        };
+
         fetchPortfolioData();
         fetchPerformanceData();
-    }, []);
-
-    const fetchPortfolioData = async () => {
-        try {
-            setLoading(true);
-            console.log('Token:', localStorage.getItem('token')); // Debug
-            const data = await portfolioService.getSummary();
-            setPortfolioData(data);
-        } catch (error) {
-            console.error('Portfolio API Error:', error.response); // Debug
-            setError(error.response?.data?.message || 'Failed to fetch portfolio data');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const fetchPerformanceData = async () => {
-        try {
-            setPerformanceLoading(true);
-            const data = await portfolioService.getPerformance();
-            setPerformanceData(data.performanceData || []);
-        } catch (error) {
-            console.error('Performance API Error:', error);
-        } finally {
-            setPerformanceLoading(false);
-        }
-    };
+    }, [setPortfolioData]);
 
     if (loading) {
         return (
@@ -67,7 +67,7 @@ function Dashboard() {
                         <p className="text-red-700">{error}</p>
                     </div>
                     <button
-                        onClick={fetchPortfolioData}
+                        onClick={() => window.location.reload()}
                         className="mt-3 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                     >
                         Retry

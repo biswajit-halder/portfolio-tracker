@@ -29,5 +29,14 @@ export const stocksService = {
     removeFromWatchlist: async (symbol) => {
         const response = await api.delete(`/api/watchlist/${symbol}`);
         return response.data;
+    },
+
+    isInWatchlist: async (symbol) => {
+        try {
+            const watchlist = await api.get('/api/watchlist');
+            return watchlist.data.some(item => item.symbol === symbol);
+        } catch {
+            return false;
+        }
     }
 };

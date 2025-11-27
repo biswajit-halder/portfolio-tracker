@@ -18,6 +18,7 @@ import Holdings from "./pages/Holdings";
 import Transactions from "./pages/Transactions";
 import Settings from "./pages/Settings";
 import Watchlist from "./pages/Watchlist";
+import StockDetails from "./pages/StockDetails";
 import NotFound from "./pages/NotFound";
 
 // Layout
@@ -73,6 +74,14 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <Watchlist />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/stock/:symbol"
+              element={
+                <ProtectedRoute>
+                  <StockDetails />
                 </ProtectedRoute>
               }
             />

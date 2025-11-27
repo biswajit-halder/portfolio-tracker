@@ -1,58 +1,62 @@
 import { useState, useEffect } from 'react';
 import { Plus, Search, TrendingUp, TrendingDown } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { stocksService } from '../services/stocksService';
 import { useDebounce } from '../hooks/useDebounce';
 import LoadingSpinner from '../components/LoadingSpinner';
+import PriceAlert from '../components/PriceAlert';
 
 export default function Watchlist() {
-    const [watchlist, setWatchlist] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [searching, setSearching] = useState(false);
+    const [watchlist, setWatchlist] = useState([]);
+
     const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
-    const fetchWatchlist = async () => {
-        try {
-            const data = await stocksService.getWatchlist();
-            setWatchlist(data);
-        } catch (error) {
-            console.error('Failed to fetch watchlist:', error);
-        }
-        setLoading(false);
-    };
+    const displayResults = debouncedSearchQuery.trim() ? searchResults : [];
+    const showSearching = debouncedSearchQuery.trim() && searchResults.length === 0;
 
-    const searchStocks = async (query) => {
-        if (!query.trim()) {
-            setSearchResults([]);
+    useEffect(() => {
+        if (!debouncedSearchQuery.trim()) {
             return;
         }
-        setSearching(true);
-        try {
-            const results = await stocksService.searchStocks(query);
-            setSearchResults(results);
-        } catch (error) {
-            console.error('Search failed:', error);
-        }
-        setSearching(false);
-    };
-
-    useEffect(() => {
-        fetchWatchlist();
-    }, []);
-
-    useEffect(() => {
-        if (debouncedSearchQuery) {
-            searchStocks(debouncedSearchQuery);
-        } else {
-            setSearchResults([]);
-        }
+        
+        const controller = new AbortController();
+        
+        stocksService.searchStocks(debouncedSearchQuery)
+            .then(results => {
+                if (!controller.signal.aborted) {
+                    setSearchResults(results);
+                }
+            })
+            .catch(error => {
+                if (!controller.signal.aborted) {
+                    console.error('Search failed:', error);
+                }
+            });
+            
+        return () => controller.abort();
     }, [debouncedSearchQuery]);
+
+    useEffect(() => {
+        const loadWatchlist = async () => {
+            try {
+                const data = await stocksService.getWatchlist();
+                setWatchlist(data);
+            } catch (error) {
+                console.error('Failed to fetch watchlist:', error);
+            }
+            setLoading(false);
+        };
+        loadWatchlist();
+    }, [setWatchlist]);
 
     const addToWatchlist = async (symbol) => {
         try {
             await stocksService.addToWatchlist(symbol);
-            fetchWatchlist();
+            const data = await stocksService.getWatchlist();
+            setWatchlist(data);
             setSearchQuery('');
             setSearchResults([]);
         } catch (error) {
@@ -66,6 +70,15 @@ export default function Watchlist() {
             setWatchlist(watchlist.filter(item => item.symbol !== symbol));
         } catch (error) {
             console.error('Failed to remove from watchlist:', error);
+        }
+    };
+
+    const handleSetAlert = async (alertData) => {
+        try {
+            // API call to set price alert
+            console.log('Setting alert:', alertData);
+        } catch (error) {
+            console.error('Failed to set alert:', error);
         }
     };
 
@@ -111,15 +124,15 @@ export default function Watchlist() {
                     />
                 </div>
 
-                {(searchResults.length > 0 || searching) && (
+                {(displayResults.length > 0 || showSearching) && (
                     <div className="mt-4 border border-gray-200 rounded-lg max-h-60 overflow-y-auto">
-                        {searching && (
+                        {showSearching && (
                             <div className="flex items-center justify-center p-4">
                                 <LoadingSpinner size="sm" className="mr-2" />
                                 <span className="text-gray-500">Searching...</span>
                             </div>
                         )}
-                        {searchResults.map((stock) => (
+                        {displayResults.map((stock) => (
                             <div key={stock.symbol} className="flex items-center justify-between p-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0">
                                 <div>
                                     <div className="font-medium text-gray-900">{stock.symbol}</div>
@@ -158,7 +171,12 @@ export default function Watchlist() {
                                 <div className="flex-1">
                                     <div className="flex items-center">
                                         <div>
-                                            <div className="font-semibold text-gray-900">{stock.symbol}</div>
+                                            <Link 
+                                                to={`/stock/${stock.symbol}`}
+                                                className="font-semibold text-gray-900 hover:text-purple-600 transition-colors"
+                                            >
+                                                {stock.symbol}
+                                            </Link>
                                             <div className="text-sm text-gray-500">{stock.name}</div>
                                         </div>
                                     </div>
@@ -181,6 +199,11 @@ export default function Watchlist() {
                                         </div>
                                     </div>
 
+                                    <PriceAlert
+                                        symbol={stock.symbol}
+                                        currentPrice={stock.currentPrice}
+                                        onSetAlert={handleSetAlert}
+                                    />
                                     <button
                                         onClick={() => removeFromWatchlist(stock.symbol)}
                                         className="text-red-600 hover:text-red-800 text-sm font-medium"
