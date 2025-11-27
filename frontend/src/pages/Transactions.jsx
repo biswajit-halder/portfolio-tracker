@@ -6,6 +6,7 @@ import { stocksService } from '../services/stocksService';
 function getLabelText(key) {
     const labels = {
         symbol: 'Symbol',
+        startDate: 'Start Date',
         // Add other keys and translations as needed
     };
     return labels[key] || key;
@@ -205,7 +206,7 @@ export default function Transactions() {
                     </select>
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{getLabelText('startDate')}</label>
                     <input
                         type="date"
                         value={filters.startDate}
@@ -214,7 +215,7 @@ export default function Transactions() {
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{getLabelText('endDate')}</label>
                     <input
                         type="date"
                         value={filters.endDate}
@@ -231,112 +232,108 @@ export default function Transactions() {
                     Clear Filters
                 </button>
             </div>
-        </div>
-    )
-}
-
-{/* Transactions Table */ }
-<div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-    {transactions.length === 0 ? (
-        <div className="p-12 text-center">
-            <div className="bg-gray-100 p-4 rounded-full w-16 h-16 mx-auto mb-4">
-                <Calendar className="h-8 w-8 text-gray-400 mx-auto mt-1" />
+            {/* Transactions Table */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                {transactions.length === 0 ? (
+                    <div className="p-12 text-center">
+                        <div className="bg-gray-100 p-4 rounded-full w-16 h-16 mx-auto mb-4">
+                            <Calendar className="h-8 w-8 text-gray-400 mx-auto mt-1" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">No Transactions Found</h3>
+                        <p className="text-gray-600 mb-6">
+                            {Object.values(filters).some(f => f) ? 'No transactions match your filters.' : 'Start by adding your first transaction.'}
+                        </p>
+                        {!Object.values(filters).some(f => f) && (
+                            <button
+                                onClick={() => setShowModal(true)}
+                                className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                            >
+                                Add First Transaction
+                            </button>
+                        )}
+                    </div>
+                ) : (
+                    <div className="overflow-x-auto">
+                        <table className="w-full">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Date
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Symbol
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Type
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Quantity
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Price
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Total Amount
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {transactions.map((transaction) => (
+                                    <tr key={transaction._id} className="hover:bg-gray-50">
+                                        <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                                            {new Date(transaction.transactionDate).toLocaleDateString()}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="font-medium text-gray-900">{transaction.symbol}</div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${transaction.type === 'BUY'
+                                                ? 'bg-green-100 text-green-800'
+                                                : 'bg-red-100 text-red-800'
+                                                }`}>
+                                                {transaction.type}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                                            {transaction.quantity}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                                            {formatCurrency(transaction.pricePerShare)}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                                            {formatCurrency(transaction.totalAmount || transaction.quantity * transaction.pricePerShare)}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <button
+                                                onClick={() => handleDeleteTransaction(transaction._id)}
+                                                className="text-red-600 hover:text-red-900 p-1"
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Transactions Found</h3>
-            <p className="text-gray-600 mb-6">
-                {Object.values(filters).some(f => f) ? 'No transactions match your filters.' : 'Start by adding your first transaction.'}
-            </p>
-            {!Object.values(filters).some(f => f) && (
-                <button
-                    onClick={() => setShowModal(true)}
-                    className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-                >
-                    Add First Transaction
-                </button>
-            )}
-        </div>
-    ) : (
-        <div className="overflow-x-auto">
-            <table className="w-full">
-                <thead className="bg-gray-50">
-                    <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Date
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Symbol
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Type
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Quantity
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Price
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Total Amount
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Actions
-                        </th>
-                    </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                    {transactions.map((transaction) => (
-                        <tr key={transaction._id} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 whitespace-nowrap text-gray-500">
-                                {new Date(transaction.transactionDate).toLocaleDateString()}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="font-medium text-gray-900">{transaction.symbol}</div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${transaction.type === 'BUY'
-                                    ? 'bg-green-100 text-green-800'
-                                    : 'bg-red-100 text-red-800'
-                                    }`}>
-                                    {transaction.type}
-                                </span>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-gray-900">
-                                {transaction.quantity}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-gray-900">
-                                {formatCurrency(transaction.pricePerShare)}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-gray-900">
-                                {formatCurrency(transaction.totalAmount || transaction.quantity * transaction.pricePerShare)}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <button
-                                    onClick={() => handleDeleteTransaction(transaction._id)}
-                                    className="text-red-600 hover:text-red-900 p-1"
-                                >
-                                    <Trash2 className="h-4 w-4" />
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
-    )}
-</div>
 
-{/* Modal */ }
-{
-    showModal && (
-        <TransactionModal
-            onClose={() => setShowModal(false)}
-            onSave={() => {
-                setShowModal(false);
-                fetchTransactions();
-            }}
-        />
-    )
-}
+            {/* Modal */}
+            {
+                showModal && (
+                    <TransactionModal
+                        onClose={() => setShowModal(false)}
+                        onSave={() => {
+                            setShowModal(false);
+                            fetchTransactions();
+                        }}
+                    />
+                )
+            }
         </div >
     );
 }
