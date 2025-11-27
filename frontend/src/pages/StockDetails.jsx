@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, TrendingUp, TrendingDown, Plus, Bell, Eye, EyeOff } from 'lucide-react';
 import { stocksService } from '../services/stocksService';
+import { alertService } from '../services/alertService';
 import LoadingSpinner from '../components/LoadingSpinner';
 import PriceAlert from '../components/PriceAlert';
+import StockNews from '../components/StockNews';
 
 export default function StockDetails() {
     const { symbol } = useParams();
@@ -57,8 +59,8 @@ export default function StockDetails() {
 
     const handleSetAlert = async (alertData) => {
         try {
-            console.log('Setting alert:', alertData);
-            // API call to set price alert
+            await alertService.createAlert(alertData);
+            // Show success message or update UI
         } catch (error) {
             console.error('Failed to set alert:', error);
         }
@@ -106,7 +108,7 @@ export default function StockDetails() {
             {/* Header */}
             <div className="flex items-center mb-6">
                 <button
-                    onClick={() => navigate(-1)}
+                    onClick={() => window.history.length > 1 ? navigate(-1) : navigate('/dashboard')}
                     className="flex items-center text-gray-600 hover:text-gray-900 mr-4 cursor-pointer"
                 >
                     <ArrowLeft className="h-5 w-5 mr-1" />
@@ -220,21 +222,29 @@ export default function StockDetails() {
                 </div>
             </div>
 
-            {/* Company Info */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">About {stock.name}</h3>
-                <p className="text-gray-600 leading-relaxed">
-                    {stock.description || `${stock.companyName} is a leading company in its sector, listed on the ${stock.exchange || 'NSE'}. The company has shown consistent performance and is a popular choice among investors for long-term wealth creation.`}
-                </p>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Company Info */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">About {stock.name}</h3>
+                    <p className="text-gray-600 leading-relaxed">
+                        {stock.description || `${stock.companyName} is a leading company in its sector, listed on the ${stock.exchange || 'NSE'}. The company has shown consistent performance and is a popular choice among investors for long-term wealth creation.`}
+                    </p>
 
-                {stock.sector && (
-                    <div className="mt-4 flex items-center">
-                        <span className="text-sm text-gray-600 mr-2">Sector:</span>
-                        <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">
-                            {stock.sector}
-                        </span>
-                    </div>
-                )}
+                    {stock.sector && (
+                        <div className="mt-4 flex items-center">
+                            <span className="text-sm text-gray-600 mr-2">Sector:</span>
+                            <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">
+                                {stock.sector}
+                            </span>
+                        </div>
+                    )}
+                </div>
+
+                {/* News */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Latest News</h3>
+                    <StockNews symbol={stock.symbol} />
+                </div>
             </div>
         </div>
     );

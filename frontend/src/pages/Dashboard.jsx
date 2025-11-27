@@ -183,7 +183,7 @@ function Dashboard() {
                             </div>
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center">
-                                    <span className="font-medium text-gray-900">
+                                    <span className="font-medium text-gray-900 cursor-pointer hover:text-purple-600" onClick={() => window.open(`/stock/${portfolioData.bestPerformer.symbol}`, '_blank')}>
                                         {portfolioData.bestPerformer.symbol}
                                     </span>
                                     <span className="text-green-600 font-semibold">
@@ -211,7 +211,7 @@ function Dashboard() {
                             </div>
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center">
-                                    <span className="font-medium text-gray-900">
+                                    <span className="font-medium text-gray-900 cursor-pointer hover:text-purple-600" onClick={() => window.open(`/stock/${portfolioData.worstPerformer.symbol}`, '_blank')}>
                                         {portfolioData.worstPerformer.symbol}
                                     </span>
                                     <span className="text-red-600 font-semibold">
@@ -244,7 +244,7 @@ function Dashboard() {
                                             backgroundColor: `hsl(${(index * 137.5) % 360}, 70%, 50%)`
                                         }}
                                     ></div>
-                                    <span className="font-medium text-gray-900">{asset.symbol}</span>
+                                    <span className="font-medium text-gray-900 cursor-pointer hover:text-purple-600" onClick={() => window.open(`/stock/${asset.symbol}`, '_blank')}>{asset.symbol}</span>
                                 </div>
                                 <div className="text-right">
                                     <div className="font-semibold text-gray-900">

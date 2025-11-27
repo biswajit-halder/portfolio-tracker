@@ -151,7 +151,7 @@ export default function Holdings() {
                                 {filteredHoldings.map((holding) => (
                                     <tr key={holding._id} className="hover:bg-gray-50">
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="font-medium text-gray-900">{holding.symbol}</div>
+                                            <div className="font-medium text-gray-900 cursor-pointer hover:text-purple-600" onClick={() => window.open(`/stock/${holding.symbol}`, '_blank')}>{holding.symbol}</div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-gray-900">
                                             {holding.quantity}

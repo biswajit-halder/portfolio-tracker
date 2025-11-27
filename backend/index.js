@@ -8,6 +8,7 @@ import transactionsRoutes from "./routes/transactionsRoutes.js";
 import watchlistRoutes from "./routes/watchlistRoutes.js";
 import portfolioRoutes from "./routes/portfolioRoutes.js";
 import stocksRoutes from "./routes/stocksRoutes.js";
+import alertRoutes from "./routes/alerts.js";
 import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
 import { generalLimiter, authLimiter, stockLimiter } from "./middleware/rateLimitMiddleware.js";
 
@@ -30,6 +31,7 @@ app.use("/api/transactions", transactionsRoutes);
 app.use("/api/portfolio", portfolioRoutes);
 app.use("/api/watchlist", watchlistRoutes);
 app.use("/api/stocks", stockLimiter, stocksRoutes);
+app.use("/api/alerts", alertRoutes);
 
 app.get("/", (req, res) => {
     res.send("API WORKING");

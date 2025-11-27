@@ -18,6 +18,8 @@ import Holdings from "./pages/Holdings";
 import Transactions from "./pages/Transactions";
 import Settings from "./pages/Settings";
 import Watchlist from "./pages/Watchlist";
+import Alerts from "./pages/Alerts";
+import Performance from "./pages/Performance";
 import StockDetails from "./pages/StockDetails";
 import NotFound from "./pages/NotFound";
 
@@ -74,6 +76,22 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <Watchlist />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/alerts"
+              element={
+                <ProtectedRoute>
+                  <Alerts />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/performance"
+              element={
+                <ProtectedRoute>
+                  <Performance />
                 </ProtectedRoute>
               }
             />
