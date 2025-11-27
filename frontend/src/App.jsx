@@ -14,6 +14,7 @@ import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
 import Dashboard from "./pages/Dashboard";
 import Holdings from "./pages/Holdings";
+import Transactions from "./pages/Transactions";
 import NotFound from "./pages/NotFound";
 
 // Layout
@@ -44,6 +45,14 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <Holdings />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/transactions"
+              element={
+                <ProtectedRoute>
+                  <Transactions />
                 </ProtectedRoute>
               }
             />

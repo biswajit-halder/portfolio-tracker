@@ -51,8 +51,8 @@ export default function Holdings() {
         return new Intl.NumberFormat('en-IN', {
             style: 'currency',
             currency: 'INR',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
         }).format(amount);
     };
 
@@ -261,7 +261,7 @@ function HoldingModal({ holding, onClose, onSave }) {
     };
 
     return (
-        <div className="fixed inset-0 bg-slate-500/40 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-slate-500/60 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-xl max-w-md w-full p-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">
                     {holding ? 'Edit Holding' : 'Add Holding'}

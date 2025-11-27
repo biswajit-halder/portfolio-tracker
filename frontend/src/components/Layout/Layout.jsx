@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { TrendingUp, LogOut, BarChart3, PieChart } from 'lucide-react';
+import { TrendingUp, LogOut, BarChart3, PieChart, History } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export default function Layout() {
@@ -13,12 +13,13 @@ export default function Layout() {
     const navigation = [
         { name: 'Dashboard', href: '/dashboard', icon: BarChart3 },
         { name: 'Holdings', href: '/holdings', icon: PieChart },
+        { name: 'Transactions', href: '/transactions', icon: History },
     ];
 
     return (
         <div className="min-h-screen bg-gray-50">
             <nav className="bg-white shadow-sm border-b border-gray-200">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center py-4">
                         <div className="flex items-center space-x-8">
                             <Link to="/dashboard" className="flex items-center">
@@ -35,11 +36,10 @@ export default function Layout() {
                                         <Link
                                             key={item.name}
                                             to={item.href}
-                                            className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                                                isActive
+                                            className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive
                                                     ? 'bg-purple-100 text-purple-700'
                                                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                                            }`}
+                                                }`}
                                         >
                                             <Icon className="h-4 w-4 mr-2" />
                                             {item.name}
