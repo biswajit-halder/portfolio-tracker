@@ -7,6 +7,7 @@ import {
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 // Pages
 import Landing from "./pages/Landing";
@@ -24,8 +25,9 @@ import Layout from "./components/Layout/Layout";
 
 export default function App() {
   return (
-    <Router>
-      <AuthProvider>
+    <ErrorBoundary>
+      <Router>
+        <AuthProvider>
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
@@ -79,7 +81,8 @@ export default function App() {
           {/* 404 */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </AuthProvider>
-    </Router>
+        </AuthProvider>
+      </Router>
+    </ErrorBoundary>
   );
 }

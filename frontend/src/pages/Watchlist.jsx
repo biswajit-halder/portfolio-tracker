@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Plus, Search, TrendingUp, TrendingDown } from 'lucide-react';
 import { stocksService } from '../services/stocksService';
+import { useDebounce } from '../hooks/useDebounce';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 export default function Watchlist() {
     const [watchlist, setWatchlist] = useState([]);
@@ -8,10 +10,7 @@ export default function Watchlist() {
     const [searchResults, setSearchResults] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searching, setSearching] = useState(false);
-
-    useEffect(() => {
-        fetchWatchlist();
-    }, []);
+    const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
     const fetchWatchlist = async () => {
         try {
@@ -37,6 +36,18 @@ export default function Watchlist() {
         }
         setSearching(false);
     };
+
+    useEffect(() => {
+        fetchWatchlist();
+    }, []);
+
+    useEffect(() => {
+        if (debouncedSearchQuery) {
+            searchStocks(debouncedSearchQuery);
+        } else {
+            setSearchResults([]);
+        }
+    }, [debouncedSearchQuery]);
 
     const addToWatchlist = async (symbol) => {
         try {
@@ -95,16 +106,19 @@ export default function Watchlist() {
                         type="text"
                         placeholder="Search stocks to add to watchlist..."
                         value={searchQuery}
-                        onChange={(e) => {
-                            setSearchQuery(e.target.value);
-                            searchStocks(e.target.value);
-                        }}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     />
                 </div>
 
-                {searchResults.length > 0 && (
+                {(searchResults.length > 0 || searching) && (
                     <div className="mt-4 border border-gray-200 rounded-lg max-h-60 overflow-y-auto">
+                        {searching && (
+                            <div className="flex items-center justify-center p-4">
+                                <LoadingSpinner size="sm" className="mr-2" />
+                                <span className="text-gray-500">Searching...</span>
+                            </div>
+                        )}
                         {searchResults.map((stock) => (
                             <div key={stock.symbol} className="flex items-center justify-between p-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0">
                                 <div>

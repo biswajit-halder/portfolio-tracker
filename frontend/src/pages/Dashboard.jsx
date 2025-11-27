@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { TrendingUp, TrendingDown, DollarSign, Percent, Award, AlertTriangle } from 'lucide-react';
 import { portfolioService } from '../services/portfolioService';
 import { useAuth } from '../context/AuthContext';
 import PortfolioChart from '../components/Charts/PortfolioChart';
 import AllocationChart from '../components/Charts/AllocationChart';
+import LoadingSpinner from '../components/LoadingSpinner';
 
-export default function Dashboard() {
+function Dashboard() {
     const [portfolioData, setPortfolioData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -46,13 +47,11 @@ export default function Dashboard() {
 
     if (loading) {
         return (
-            <div className="p-8">
-                <div className="animate-pulse">
-                    <div className="h-8 bg-gray-300 rounded w-1/4 mb-6"></div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {[...Array(4)].map((_, i) => (
-                            <div key={i} className="h-32 bg-gray-300 rounded-lg"></div>
-                        ))}
+            <div className="p-8 bg-gray-50 min-h-screen">
+                <div className="flex items-center justify-center min-h-96">
+                    <div className="text-center">
+                        <LoadingSpinner size="lg" className="mx-auto mb-4" />
+                        <p className="text-gray-600">Loading dashboard...</p>
                     </div>
                 </div>
             </div>
@@ -295,3 +294,5 @@ export default function Dashboard() {
         </div>
     );
 }
+
+export default memo(Dashboard);
