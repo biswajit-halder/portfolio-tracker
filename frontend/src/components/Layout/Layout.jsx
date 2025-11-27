@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { TrendingUp, LogOut, BarChart3, PieChart, History } from 'lucide-react';
+import { TrendingUp, LogOut, BarChart3, PieChart, History, Settings, Eye } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export default function Layout() {
@@ -14,6 +14,8 @@ export default function Layout() {
         { name: 'Dashboard', href: '/dashboard', icon: BarChart3 },
         { name: 'Holdings', href: '/holdings', icon: PieChart },
         { name: 'Transactions', href: '/transactions', icon: History },
+        { name: 'Watchlist', href: '/watchlist', icon: Eye },
+        { name: 'Settings', href: '/settings', icon: Settings },
     ];
 
     return (

@@ -2,15 +2,20 @@ import { useState, useEffect } from 'react';
 import { TrendingUp, TrendingDown, DollarSign, Percent, Award, AlertTriangle } from 'lucide-react';
 import { portfolioService } from '../services/portfolioService';
 import { useAuth } from '../context/AuthContext';
+import PortfolioChart from '../components/Charts/PortfolioChart';
+import AllocationChart from '../components/Charts/AllocationChart';
 
 export default function Dashboard() {
     const [portfolioData, setPortfolioData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [performanceData, setPerformanceData] = useState([]);
+    const [performanceLoading, setPerformanceLoading] = useState(true);
     const { user } = useAuth();
 
     useEffect(() => {
         fetchPortfolioData();
+        fetchPerformanceData();
     }, []);
 
     const fetchPortfolioData = async () => {
@@ -24,6 +29,18 @@ export default function Dashboard() {
             setError(error.response?.data?.message || 'Failed to fetch portfolio data');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchPerformanceData = async () => {
+        try {
+            setPerformanceLoading(true);
+            const data = await portfolioService.getPerformance();
+            setPerformanceData(data.performanceData || []);
+        } catch (error) {
+            console.error('Performance API Error:', error);
+        } finally {
+            setPerformanceLoading(false);
         }
     };
 
@@ -50,7 +67,7 @@ export default function Dashboard() {
                         <AlertTriangle className="h-5 w-5 text-red-500 mr-2" />
                         <p className="text-red-700">{error}</p>
                     </div>
-                    <button 
+                    <button
                         onClick={fetchPortfolioData}
                         className="mt-3 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                     >
@@ -121,17 +138,15 @@ export default function Dashboard() {
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-gray-600 mb-1">Total Gain/Loss</p>
-                            <p className={`text-2xl font-bold ${
-                                (portfolioData?.totalGainLoss || 0) >= 0 ? 'text-green-600' : 'text-red-600'
-                            }`}>
+                            <p className={`text-2xl font-bold ${(portfolioData?.totalGainLoss || 0) >= 0 ? 'text-green-600' : 'text-red-600'
+                                }`}>
                                 {formatCurrency(portfolioData?.totalGainLoss || 0)}
                             </p>
                         </div>
-                        <div className={`p-3 rounded-lg ${
-                            (portfolioData?.totalGainLoss || 0) >= 0 ? 'bg-green-100' : 'bg-red-100'
-                        }`}>
-                            {(portfolioData?.totalGainLoss || 0) >= 0 ? 
-                                <TrendingUp className="h-6 w-6 text-green-600" /> : 
+                        <div className={`p-3 rounded-lg ${(portfolioData?.totalGainLoss || 0) >= 0 ? 'bg-green-100' : 'bg-red-100'
+                            }`}>
+                            {(portfolioData?.totalGainLoss || 0) >= 0 ?
+                                <TrendingUp className="h-6 w-6 text-green-600" /> :
                                 <TrendingDown className="h-6 w-6 text-red-600" />
                             }
                         </div>
@@ -143,9 +158,8 @@ export default function Dashboard() {
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-gray-600 mb-1">Return %</p>
-                            <p className={`text-2xl font-bold ${
-                                (portfolioData?.totalGainLossPercentage || 0) >= 0 ? 'text-green-600' : 'text-red-600'
-                            }`}>
+                            <p className={`text-2xl font-bold ${(portfolioData?.totalGainLossPercentage || 0) >= 0 ? 'text-green-600' : 'text-red-600'
+                                }`}>
                                 {formatPercent(portfolioData?.totalGainLossPercentage || 0)}
                             </p>
                         </div>
@@ -219,16 +233,16 @@ export default function Dashboard() {
 
             {/* Asset Allocation */}
             {portfolioData?.assetAllocation?.length > 0 && (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Asset Allocation</h3>
                     <div className="space-y-3">
                         {portfolioData.assetAllocation.map((asset, index) => (
                             <div key={index} className="flex items-center justify-between">
                                 <div className="flex items-center">
-                                    <div 
+                                    <div
                                         className="w-4 h-4 rounded-full mr-3"
-                                        style={{ 
-                                            backgroundColor: `hsl(${(index * 137.5) % 360}, 70%, 50%)` 
+                                        style={{
+                                            backgroundColor: `hsl(${(index * 137.5) % 360}, 70%, 50%)`
                                         }}
                                     ></div>
                                     <span className="font-medium text-gray-900">{asset.symbol}</span>
@@ -244,6 +258,20 @@ export default function Dashboard() {
                             </div>
                         ))}
                     </div>
+                </div>
+            )}
+
+            {/* Charts Section */}
+            {portfolioData && portfolioData.totalInvestment > 0 && (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <PortfolioChart
+                        data={performanceData}
+                        loading={performanceLoading}
+                    />
+                    <AllocationChart
+                        data={portfolioData.assetAllocation}
+                        loading={loading}
+                    />
                 </div>
             )}
 

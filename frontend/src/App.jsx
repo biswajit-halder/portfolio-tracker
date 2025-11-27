@@ -15,6 +15,8 @@ import Register from "./pages/Auth/Register";
 import Dashboard from "./pages/Dashboard";
 import Holdings from "./pages/Holdings";
 import Transactions from "./pages/Transactions";
+import Settings from "./pages/Settings";
+import Watchlist from "./pages/Watchlist";
 import NotFound from "./pages/NotFound";
 
 // Layout
@@ -53,6 +55,22 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <Transactions />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <Settings />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/watchlist"
+              element={
+                <ProtectedRoute>
+                  <Watchlist />
                 </ProtectedRoute>
               }
             />
